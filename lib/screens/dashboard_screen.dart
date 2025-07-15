@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:percent_indicator/percent_indicator.dart';
+import 'eco_action_screen.dart';
 
 class DashboardScreen extends StatefulWidget {
   const DashboardScreen({super.key});
@@ -542,7 +543,17 @@ class _DashboardScreenState extends State<DashboardScreen> {
       ),
       child: BottomNavigationBar(
         currentIndex: _selectedIndex,
-        onTap: (index) => setState(() => _selectedIndex = index),
+        onTap: (index) {
+          if (index == 1) {
+            // Navigate to EcoActionScreen when Add Action is tapped
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => const EcoActionScreen()),
+            );
+          } else {
+            setState(() => _selectedIndex = index);
+          }
+        },
         type: BottomNavigationBarType.fixed,
         backgroundColor: Colors.transparent,
         elevation: 0,

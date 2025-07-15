@@ -17,6 +17,9 @@ dependencies:
   fl_chart: ^0.65.0
   intl: ^0.18.1
   percent_indicator: ^4.2.3
+  confetti: ^0.7.0
+  image_picker: ^1.0.4
+  dotted_border: ^2.1.0
 
 dev_dependencies:
   flutter_test:
