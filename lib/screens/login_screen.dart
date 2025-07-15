@@ -19,10 +19,7 @@ class _LoginScreenState extends State<LoginScreen> {
     // TODO: Implement login logic
     if (_emailController.text == 'user@example.com' && 
         _passwordController.text == 'password123') {
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => const DashboardScreen()),
-      );
+      Navigator.pushReplacementNamed(context, '/dashboard');
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Invalid credentials')),
@@ -198,13 +195,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         ),
                         TextButton(
                           onPressed: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) =>
-                                    const RegisterScreen(),
-                              ),
-                            );
+                            Navigator.pushNamed(context, '/register');
                           },
                           child: const Text('Register'),
                         ),

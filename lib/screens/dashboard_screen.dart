@@ -544,14 +544,13 @@ class _DashboardScreenState extends State<DashboardScreen> {
       child: BottomNavigationBar(
         currentIndex: _selectedIndex,
         onTap: (index) {
+          setState(() => _selectedIndex = index);
           if (index == 1) {
-            // Navigate to EcoActionScreen when Add Action is tapped
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => const EcoActionScreen()),
-            );
-          } else {
-            setState(() => _selectedIndex = index);
+            Navigator.pushNamed(context, '/eco-action')
+              .then((_) => setState(() => _selectedIndex = 0));
+          } else if (index == 3) {
+            Navigator.pushNamed(context, '/learn')
+              .then((_) => setState(() => _selectedIndex = 0));
           }
         },
         type: BottomNavigationBarType.fixed,
