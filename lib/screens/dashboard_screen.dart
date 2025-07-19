@@ -210,6 +210,26 @@ class _DashboardScreenState extends State<DashboardScreen> {
     );
   }
 
+  void _onNavItemTapped(int index) {
+    setState(() {
+      _selectedIndex = index;
+    });
+    switch (index) {
+      case 1: // Add Action
+        Navigator.pushNamed(context, '/eco-action');
+        break;
+      case 2: // Rewards
+        Navigator.pushNamed(context, '/rewards');
+        break;
+      case 3: // Learn
+        Navigator.pushNamed(context, '/learn');
+        break;
+      case 4: // Profile
+        Navigator.pushNamed(context, '/profile');
+        break;
+    }
+  }
+
   Widget _buildCarbonFootprintSection() {
     return Container(
       padding: const EdgeInsets.all(20),
@@ -534,7 +554,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
         color: Colors.white,
         boxShadow: [
           BoxShadow(
-            color: Colors.grey.withOpacity(0.1),
+            color: Colors.black.withOpacity(0.1),
             spreadRadius: 2,
             blurRadius: 4,
             offset: const Offset(0, -2),
@@ -543,16 +563,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
       ),
       child: BottomNavigationBar(
         currentIndex: _selectedIndex,
-        onTap: (index) {
-          setState(() => _selectedIndex = index);
-          if (index == 1) {
-            Navigator.pushNamed(context, '/eco-action')
-              .then((_) => setState(() => _selectedIndex = 0));
-          } else if (index == 3) {
-            Navigator.pushNamed(context, '/learn')
-              .then((_) => setState(() => _selectedIndex = 0));
-          }
-        },
+        onTap: _onNavItemTapped,
         type: BottomNavigationBarType.fixed,
         backgroundColor: Colors.transparent,
         elevation: 0,

@@ -1,24 +1,27 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'screens/login_screen.dart';
+import 'screens/register_screen.dart';
 import 'screens/dashboard_screen.dart';
 import 'screens/eco_action_screen.dart';
 import 'screens/educational_hub_screen.dart';
-import 'screens/register_screen.dart';
+import 'screens/rewards_screen.dart';
+import '/screens/profile_screen.dart';
 
 void main() {
   runApp(const LeafPrintApp());
 }
 
-// Define app routes
 final Map<String, WidgetBuilder> routes = {
   '/': (context) => const LoginScreen(),
   '/register': (context) => const RegisterScreen(),
   '/dashboard': (context) => const DashboardScreen(),
   '/eco-action': (context) => const EcoActionScreen(),
   '/learn': (context) => const EducationalHubScreen(),
-  // Optional: Make sure this is defined in EducationalHubScreen class
-  // static const routeName = '/learn'; 
+  '/rewards': (context) => const RewardsScreen(),
+  '/profile': (context) => const ProfileScreen(),
+  EducationalHubScreen.routeName: (context) => const EducationalHubScreen(),
+  RewardsScreen.routeName: (context) => const RewardsScreen(),
 };
 
 class LeafPrintApp extends StatelessWidget {
