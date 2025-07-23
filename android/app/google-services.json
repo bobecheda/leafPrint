@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "611415675152",
+    "project_id": "leafprint-4e435",
+    "storage_bucket": "leafprint-4e435.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:611415675152:android:fbededbde5561a9d8cd595",
+        "android_client_info": {
+          "package_name": "com.example.leafprint"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB0eG2w7g1VTTiz6pQbOMmQmmat0c--OwU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

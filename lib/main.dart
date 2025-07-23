@@ -7,8 +7,16 @@ import 'screens/eco_action_screen.dart';
 import 'screens/educational_hub_screen.dart';
 import 'screens/rewards_screen.dart';
 import '/screens/profile_screen.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_auth/firebase_auth.dart'; // Add this import
+import 'services/auth_service.dart'; // Add this import
+import 'firebase_options.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
   runApp(const LeafPrintApp());
 }
 
@@ -32,14 +40,21 @@ class LeafPrintApp extends StatelessWidget {
     return MaterialApp(
       title: 'LeafPrint',
       debugShowCheckedModeBanner: false,
-      initialRoute: '/',
-      routes: routes,
+      // Remove initialRoute and routes
       onGenerateRoute: (settings) {
         switch (settings.name) {
-          case '/':
-            return MaterialPageRoute(builder: (context) => const LoginScreen());
-          case EducationalHubScreen.routeName:
+          case '/register':
+            return MaterialPageRoute(builder: (context) => const RegisterScreen());
+          case '/dashboard':
+            return MaterialPageRoute(builder: (context) => const DashboardScreen());
+          case '/eco-action':
+            return MaterialPageRoute(builder: (context) => const EcoActionScreen());
+          case '/learn':
             return MaterialPageRoute(builder: (context) => const EducationalHubScreen());
+          case '/rewards':
+            return MaterialPageRoute(builder: (context) => const RewardsScreen());
+          case '/profile':
+            return MaterialPageRoute(builder: (context) => const ProfileScreen());
           default:
             return MaterialPageRoute(builder: (context) => const LoginScreen());
         }
@@ -77,6 +92,20 @@ class LeafPrintApp extends StatelessWidget {
             ),
           ),
         ),
+      ),
+      home: StreamBuilder<User?>(
+        stream: AuthService().authStateChanges,
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Scaffold(
+              body: Center(child: CircularProgressIndicator()),
+            );
+          }
+          if (snapshot.hasData) {
+            return const DashboardScreen();
+          }
+          return const LoginScreen();
+        },
       ),
     );
   }

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import '../services/auth_service.dart';
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
@@ -16,16 +17,36 @@ class _RegisterScreenState extends State<RegisterScreen> {
   final _confirmPasswordController = TextEditingController();
   bool _obscurePassword = true;
   bool _obscureConfirmPassword = true;
+  final _authService = AuthService();
+  bool _isLoading = false;
 
-  void _handleRegister() {
+  Future<void> _handleRegister() async {
     if (_formKey.currentState?.validate() ?? false) {
-      // TODO: Implement registration logic
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Registration Successful!')),
-      );
-      Navigator.pop(context); // Return to login screen
+      setState(() => _isLoading = true);
+      try {
+        await _authService.registerWithEmailAndPassword(
+          _emailController.text.trim(),
+          _passwordController.text,
+          _nameController.text.trim(),
+        );
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Registration Successful!')),
+          );
+          Navigator.pushReplacementNamed(context, '/dashboard');
+        }
+      } catch (e) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text(e.toString())),
+          );
+        }
+      } finally {
+        if (mounted) setState(() => _isLoading = false);
+      }
     }
   }
+
 
   String? _validateEmail(String? value) {
     if (value == null || value.isEmpty) {
@@ -173,11 +194,20 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 const SizedBox(height: 32),
 
                 // Register Button
-                ElevatedButton(
-                  onPressed: _handleRegister,
-                  child: const Text('Register'),
-                ),
-                const SizedBox(height: 24),
+ElevatedButton(
+  onPressed: _isLoading ? null : _handleRegister,
+  child: _isLoading
+      ? const SizedBox(
+          height: 20,
+          width: 20,
+          child: CircularProgressIndicator(
+            valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+            strokeWidth: 2,
+          ),
+        )
+      : const Text('Register'),
+),
+
 
                 // Social Registration Section
                 Row(
