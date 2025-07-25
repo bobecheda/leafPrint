@@ -13,6 +13,18 @@ class AuthService {
   // Auth state changes stream
   Stream<User?> get authStateChanges => _auth.authStateChanges();
 
+  // Get current user's display name with fallback
+  String getCurrentUserName() {
+    final user = _auth.currentUser;
+    return user?.displayName ?? 'User';
+  }
+
+  // Get current user's email
+  String? getCurrentUserEmail() {
+    final user = _auth.currentUser;
+    return user?.email;
+  }
+
   // Sign in with email and password
   Future<UserCredential> signInWithEmailAndPassword(String email, String password) async {
     try {

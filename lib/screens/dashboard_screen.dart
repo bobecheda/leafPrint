@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:percent_indicator/percent_indicator.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'eco_action_screen.dart';
+import '../services/auth_service.dart';
 
 class DashboardScreen extends StatefulWidget {
   const DashboardScreen({super.key});
@@ -15,6 +17,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
   int _selectedIndex = 0;
   String _selectedTimeRange = 'Week';
   final List<String> _timeRanges = ['Week', 'Month', 'Year'];
+  final AuthService _authService = AuthService();
 
   final List<Map<String, dynamic>> _actions = [
     {
@@ -144,18 +147,26 @@ class _DashboardScreenState extends State<DashboardScreen> {
         backgroundColor: Colors.white,
         foregroundColor: Colors.black,
         elevation: 1,
-        title: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Text(
-              'Welcome back,',
-              style: TextStyle(fontSize: 14, color: Colors.grey),
-            ),
-            const Text(
-              'Emma Johnson',
-              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-            ),
-          ],
+        title: StreamBuilder<User?>(
+          stream: FirebaseAuth.instance.authStateChanges(),
+          builder: (context, snapshot) {
+            final user = snapshot.data;
+            final userName = user?.displayName ?? 'User';
+            
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text(
+                  'Welcome back,',
+                  style: TextStyle(fontSize: 14, color: Colors.grey),
+                ),
+                Text(
+                  userName,
+                  style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                ),
+              ],
+            );
+          },
         ),
         actions: [
           Stack(
@@ -183,9 +194,17 @@ class _DashboardScreenState extends State<DashboardScreen> {
           ),
           Padding(
             padding: const EdgeInsets.only(right: 16.0),
-            child: CircleAvatar(
-              radius: 16,
-              backgroundImage: NetworkImage('https://i.pravatar.cc/300'),
+            child: StreamBuilder<User?>(
+              stream: FirebaseAuth.instance.authStateChanges(),
+              builder: (context, snapshot) {
+                final user = snapshot.data;
+                return CircleAvatar(
+                  radius: 16,
+                  backgroundImage: user?.photoURL != null 
+                    ? NetworkImage(user!.photoURL!)
+                    : const NetworkImage('https://i.pravatar.cc/300'),
+                );
+              },
             ),
           ),
         ],

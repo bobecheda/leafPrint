@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:fl_chart/fl_chart.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import '../services/auth_service.dart';
 
 class ProfileScreen extends StatefulWidget {
   static const String routeName = '/profile';
@@ -13,8 +15,23 @@ class ProfileScreen extends StatefulWidget {
 
 class _ProfileScreenState extends State<ProfileScreen> {
   bool isEditing = false;
-  final TextEditingController _nameController = TextEditingController(text: 'John Doe');
-  final TextEditingController _emailController = TextEditingController(text: 'john.doe@example.com');
+  final TextEditingController _nameController = TextEditingController();
+  final TextEditingController _emailController = TextEditingController();
+  final AuthService _authService = AuthService();
+
+  @override
+  void initState() {
+    super.initState();
+    _loadUserData();
+  }
+
+  void _loadUserData() {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user != null) {
+      _nameController.text = user.displayName ?? 'User';
+      _emailController.text = user.email ?? '';
+    }
+  }
 
   // Sample data for the contribution chart
   final List<FlSpot> contributionData = [
@@ -140,7 +157,29 @@ class _ProfileScreenState extends State<ProfileScreen> {
       padding: const EdgeInsets.all(16.0),
       child: Column(
         children: [
-          if (isEditing) ...[_buildEditableFields()] else ...[_buildUserInfo()],
+          StreamBuilder<User?>(
+            stream: FirebaseAuth.instance.authStateChanges(),
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return const CircularProgressIndicator();
+              }
+              
+              final user = snapshot.data;
+              if (user != null) {
+                // Update controllers when user data changes
+                WidgetsBinding.instance.addPostFrameCallback((_) {
+                  if (_nameController.text != (user.displayName ?? 'User')) {
+                    _nameController.text = user.displayName ?? 'User';
+                  }
+                  if (_emailController.text != (user.email ?? '')) {
+                    _emailController.text = user.email ?? '';
+                  }
+                });
+              }
+              
+              return isEditing ? _buildEditableFields() : _buildUserInfo();
+            },
+          ),
           const SizedBox(height: 24),
           _buildEcoScore(),
         ],
@@ -163,11 +202,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
         const SizedBox(height: 16),
         TextField(
           controller: _emailController,
+          enabled: false, // Email should not be editable
           decoration: InputDecoration(
             labelText: 'Email',
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
             ),
+            helperText: 'Email cannot be changed',
           ),
         ),
       ],
@@ -178,7 +219,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     return Column(
       children: [
         Text(
-          _nameController.text,
+          _nameController.text.isNotEmpty ? _nameController.text : 'User',
           style: GoogleFonts.poppins(
             fontSize: 24,
             fontWeight: FontWeight.bold,
@@ -186,7 +227,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         ),
         const SizedBox(height: 4),
         Text(
-          _emailController.text,
+          _emailController.text.isNotEmpty ? _emailController.text : 'No email',
           style: GoogleFonts.poppins(
             fontSize: 16,
             color: Colors.grey[600],
@@ -466,20 +507,36 @@ class _ProfileScreenState extends State<ProfileScreen> {
               ),
             ),
           ),
-          const SizedBox(height: 24),
-          TextButton(
-            onPressed: () {
-              // Implement logout functionality
-            },
-            child: Text(
-              'Logout',
-              style: GoogleFonts.poppins(
-                fontSize: 16,
-                color: Colors.red[400],
+          const SizedBox(height: 16),
+          SizedBox(
+            width: double.infinity,
+            child: ElevatedButton(
+              onPressed: () async {
+                try {
+                  await _authService.signOut();
+                  if (mounted) {
+                    Navigator.of(context).pushNamedAndRemoveUntil(
+                      '/login',
+                      (route) => false,
+                    );
+                  }
+                } catch (e) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text('Error signing out: $e')),
+                  );
+                }
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.red,
+                foregroundColor: Colors.white,
+                padding: const EdgeInsets.symmetric(vertical: 16),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
               ),
+              child: const Text('Sign Out'),
             ),
           ),
-          const SizedBox(height: 32),
         ],
       ),
     );
