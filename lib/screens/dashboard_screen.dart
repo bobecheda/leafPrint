@@ -198,11 +198,16 @@ class _DashboardScreenState extends State<DashboardScreen> {
               stream: FirebaseAuth.instance.authStateChanges(),
               builder: (context, snapshot) {
                 final user = snapshot.data;
-                return CircleAvatar(
-                  radius: 16,
-                  backgroundImage: user?.photoURL != null 
-                    ? NetworkImage(user!.photoURL!)
-                    : const NetworkImage('https://i.pravatar.cc/300'),
+                return GestureDetector(
+                  onTap: () {
+                    Navigator.pushNamed(context, '/profile');
+                  },
+                  child: CircleAvatar(
+                    radius: 16,
+                    backgroundImage: user?.photoURL != null 
+                      ? NetworkImage(user!.photoURL!)
+                      : const NetworkImage('https://i.pravatar.cc/300'),
+                  ),
                 );
               },
             ),

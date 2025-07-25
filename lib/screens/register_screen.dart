@@ -30,15 +30,28 @@ class _RegisterScreenState extends State<RegisterScreen> {
           _nameController.text.trim(),
         );
         if (mounted) {
+          // Show success message
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Registration Successful!')),
+            const SnackBar(
+              content: Text('Registration Successful! Welcome to LeafPrint!'),
+              backgroundColor: Colors.green,
+              duration: Duration(seconds: 3),
+            ),
           );
-          Navigator.pushReplacementNamed(context, '/dashboard');
+          // Navigate to dashboard
+          Navigator.pushNamedAndRemoveUntil(
+            context,
+            '/dashboard',
+            (route) => false, // This removes all previous routes
+          );
         }
       } catch (e) {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(e.toString())),
+            SnackBar(
+              content: Text('Registration failed: ${e.toString()}'),
+              backgroundColor: Colors.red,
+            ),
           );
         }
       } finally {
